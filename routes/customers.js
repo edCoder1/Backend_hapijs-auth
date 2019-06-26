@@ -5,34 +5,34 @@ const customerHandlers = require('./route_handlers/customer_handlers');
 // Get all customers
 module.exports = server.route({
 	method: 'GET',
-	path: '/customers',
+	path: '/api/customers',
 	options: customerHandlers.getAll
 });
 
 // Get one customer
 module.exports = server.route({
 	method: 'GET',
-	path: '/customers/{id}',
+	path: '/api/customers/{id}',
 	options: customerHandlers.getById
 });
 
 // Add one customer
 module.exports = server.route({
 	method: 'POST',
-	path: '/customers',
+	path: '/api/customers',
 	options: customerHandlers.add
 });
 
 // Update Customer
 module.exports = server.route({
 	method: 'PUT',
-	path: '/customers/{id}',
+	path: '/api/customers/{id}',
 	options: customerHandlers.update
 });
 
 // Delete customer
 module.exports = server.route({
 	method: 'DELETE',
-	path: '/customers/{id}',
+	path: '/api/customers/{id}',
 	options: customerHandlers.deleteCustomer
 });
