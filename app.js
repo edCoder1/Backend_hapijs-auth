@@ -1,6 +1,6 @@
 // 'use strict';
 
-const Hapi = require('@hapi/hapi');
+const Hapi = require('./node_modules/@hapi/hapi/lib');
 const Mongoose = require('mongoose');
 const CONFIG = require('./config');
 
