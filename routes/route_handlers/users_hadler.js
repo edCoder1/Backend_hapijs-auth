@@ -1,6 +1,6 @@
 // Catch all errors properly
-const bcrypt = require('bcryptjs');
-const jwt = require('jsonwebtoken');
+const bcrypt = require('../../node_modules/bcryptjs');
+const jwt = require('../../node_modules/jsonwebtoken');
 const auth = require('../../auth');
 const User = require('../../models/User');
 const CONFIG = require('../../config');
@@ -26,18 +26,31 @@ module.exports = {
 			if (request.headers['content-type'] !== 'application/json') {
 				return 'Expected "application/json"';
 			}
+			if (!request.payload.email || !request.payload.password) {
+				return 'Email and password expected' // Return 400
+			}
 
 			const { email, password } = request.payload;
 			const user = new User({
 				email,
 				password
 			});
-
-			bcrypt.genSalt(10, (error, salt) => {
-				bcrypt.hash(user.password, salt, async (error, hash) => {
-					const newUser = await user.save();
-					return 'User successfully added';
-				});
+			return new Promise((resolve, reject) => {
+				try {
+					bcrypt.genSalt(10, (error, salt) => {
+						bcrypt.hash(user.password, salt, async (error, hash) => {
+							user.password = hash;
+							try {
+								const newUser = await user.save();
+								resolve('User successfully added');
+							} catch (error) {
+								reject('Failed while saving user info')
+							}
+						});
+					})
+				} catch (error) {
+					reject('Failed while encrypting password')
+				}
 			});
 		}
 	},

@@ -1,11 +1,11 @@
 {
-	"name": "customer_api_w_hapijs_and_jwt",
+	"name": "backend_w_hapijs_and_jwt",
 	"version": "1.0.0",
-	"description": "Custpmer API wuth Hapijs and JWT",
+	"description": "Backend APIs with Hapijs and JWT",
 	"main": "app.js",
 	"scripts": {
 		"start": "node app.js",
-		"dev": "nodemon --trace-warnings app.js "
+		"dev": "nodemon --trace-warnings app.js"
 	},
 	"author": "edCoder",
 	"license": "MIT",

@@ -1,5 +1,5 @@
 // Catch all errors properly
-const jwt = require('jsonwebtoken');
+const jwt = require('../../node_modules/jsonwebtoken');
 const auth = require('../../auth');
 const Post = require('../../models/Post');
 const CONFIG = require('../../config');
