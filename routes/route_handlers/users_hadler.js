@@ -35,7 +35,7 @@ module.exports = {
 				email,
 				password
 			});
-			return new Promise((resolve, reject) => {
+			return new Promise((resolve, reject) => {  // Make an util;
 				try {
 					bcrypt.genSalt(10, (error, salt) => {
 						bcrypt.hash(user.password, salt, async (error, hash) => {
@@ -59,43 +59,45 @@ module.exports = {
 		// config: {
 		pre: [
 			{
-				method: auth.verifyToken,
+				method: auth.getTokenFromHeadersAndVerify,
 				assign: 'verifyToken'
 			}
 		],
 		// },
 		handler: async (request, h) => {
+			// return new Promise(async (resolve, reject) => {
+
+
 			if (request.headers['content-type'] !== 'application/json') {
 				return 'Expected "application/json"';
+				// reject('Expected "application/json"');
 			}
 
-			if (request.pre.verifyToken === 'Did not get token') {
-				return 'Did not get token';
+			if (request.pre.verifyToken !== 'verified Token') {
+				// return 'token does not match';.
+				// ?REDIRECT TO login
+				return 'token update needed';
+				// reject('Did not get token');/
 			} else {
-				var verified = await jwt.verify(request.token, CONFIG.JWT_SECRET, async (error, authData) => {
-					if (error) {
-						console.log('ERROR: ' + error);
-						return 'Not authenticated';
-					} else {
-						try {
-							const user = await User.findOneAndUpdate({ _id: request.params.id }, request.payload);
-							if (user) {
-								return `Successfully updated user with id ${request.params.id}`; //  ${JSON.stringify(
-								// authData
-								// )} `;
-							} else {
-								return 'Not authenticated';
-							}
-						} catch (error) {
-							console.log('error', error);
-							return 'Id not found';
-						}
+				// shoul go in pre ??  jwt.verify
+				try {
+					const hash = await bcrypt.hash(request.payload.password, 10);
+
+					// payload exposed ??? - seems to be after getiing valid tioken.. token exposed?
+
+					//Prevent usert not found
+					const oldUser = await User.findOneAndUpdate({ _id: request.params.id }, {  //request.payload.email }, {
+						"email": request.payload.email,
+						"password": hash
+					});
+					return {  // Nedd to get user from db before ?
+						user: request.params.id,
+						oldUser: oldUser
 					}
-				});
-				if (verified === `Successfully updated user with id ${request.params.id}`) {
-					return verified; // WRONG?
-				} else {
-					return 'Not authenticated';
+				}
+				catch (ex) {
+					console.log(ex.message);
+					return ex
 				}
 			}
 		}
@@ -111,6 +113,16 @@ module.exports = {
 			}
 		}
 	},
+
+
+
+
+
+
+
+
+
+
 	registerUser: {
 		description: 'Register one user',
 		handler: async (request, h) => {
@@ -123,7 +135,7 @@ module.exports = {
 				email,
 				password
 			});
-
+			// Try returnig promise.. addUser like
 			try {
 				bcrypt.genSalt(10, async (err, salt) => {
 					if (err) {
@@ -136,6 +148,8 @@ module.exports = {
 						user.password = hash;
 						const newUser = await user.save();
 						// return `Successfully regitered user`;
+
+						// generate token after this????
 					});
 				});
 				return `Successfully regitered user`;
@@ -156,10 +170,14 @@ module.exports = {
 
 			try {
 				// Authenticate user
-				const user = await auth.authenticate(email, password);
+				// const user = await auth.authenticate(email, password);
+				const user = await auth.authenticate(request.payload.email, request.payload.password);// validate payload ?
 
-				const email_1 = user[0].email;
-				const password_1 = user[0].password;
+				// const email_1 = user[0].email;
+				// const password_1 = user[0].password;
+
+				const email_1 = user.user[0].email;
+				const password_1 = user.user[0].password;
 
 				const userObj = {
 					email_1,
@@ -186,3 +204,4 @@ module.exports = {
 		}
 	}
 };
+

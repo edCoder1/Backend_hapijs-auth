@@ -28,6 +28,7 @@ exports = server.route({
 exports = server.route({
 	method: 'PUT',
 	path: '/api/users/{id}',
+	// handler: users_handler.updateUser_v1
 	options: users_handler.updateUser
 });
 
