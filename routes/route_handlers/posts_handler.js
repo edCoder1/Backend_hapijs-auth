@@ -39,7 +39,7 @@ module.exports = {
         description: 'Update one Post',
         pre: [
             {
-                method: auth.verifyToken,
+                method: auth.getTokenFromHeadersAndVerify,
                 assign: 'verifyToken'
             }
         ],
